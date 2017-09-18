@@ -1,7 +1,8 @@
 #include <StaticWebInstance.hpp>
 #include <SocketBufferWriteRequest.hpp>
+#include <SocketFileWriteRequest.hpp>
 #include <iostream>
-#include <fstream>
+#include <sys/stat.h>
 
 // Generic callback
 void StaticWebInstance::callback(ev::io &watcher, int revents) {
@@ -81,20 +82,52 @@ void StaticWebInstance::read_cb(ev::io &watcher) {
 
 void StaticWebInstance::reply_request(const HTTPRequestHeader& request_header){
         if( request_header.valid ){
+                std::string path_to_file = root + request_header.path;
+
                 HTTPResponseHeader response_header;
                 response_header.version = "HTTP/1.0";
-                response_header.status_code = "200";
-                response_header.status_message = "OK";
-                response_header.headers["Content-Type"] = "text/html";
-                response_header.headers["Content-Length"] = "13";
                 response_header.headers["Server"] = "potato_server/1.0";
 
-                std::string raw_response_header = response_header.to_string();
-                char* str = new char[raw_response_header.length()+1];
-                strcpy(str, raw_response_header.c_str());
-                Buffer *buffer = new Buffer(str, raw_response_header.length());
+                int filefd = 0;
+                struct stat fileStat;
 
-                write_queue.push_back( new SocketBufferWriteRequest(buffer) );
+                bool fail = false;
+                if( (filefd=open(path_to_file.c_str(),O_RDONLY)) < -1){
+                        fail = true;
+                }
+                if( !fail && fstat(filefd,&fileStat) < 0 ){
+                        fail = true;
+                }
+
+                if(fail){
+                        response_header.status_code = "404";
+                        response_header.status_message = "Not Found";
+                        response_header.headers["Content-Type"] = "text/plain";
+
+                        char* str2 = new char[100]; 
+                        strcpy(str2,"There is nothing but chicken!\n");
+
+                        response_header.headers["Content-Length"] = std::to_string( strlen(str2) );
+
+                        Buffer* buffer2 = new Buffer(str2, strlen(str2));
+                        write_queue.push_back( new SocketBufferWriteRequest(buffer2) );
+                }
+                else {
+                        response_header.status_code = "200";
+                        response_header.status_message = "OK";
+                        response_header.headers["Content-Type"] = "text/html";
+                        response_header.headers["Content-Length"] = std::to_string( fileStat.st_size );
+
+                        std::string raw_response_header = response_header.to_string();
+                        char* str = new char[raw_response_header.length()+1];
+                        strcpy(str, raw_response_header.c_str());
+                        Buffer *buffer = new Buffer(str, raw_response_header.length());
+
+                        write_queue.push_back( new SocketBufferWriteRequest(buffer) );
+
+                        write_queue.push_back( new SocketFileWriteRequest(filefd,fileStat.st_size) );
+                }
+
 
                 char* str2 = new char[100]; 
                 strcpy(str2,"Hello World!\n");

@@ -40,7 +40,7 @@ StaticWebServer::StaticWebServer(std::string rootpath, int port) :root(rootpath)
 
         fcntl(s, F_SETFL, fcntl(s, F_GETFL, 0) | O_NONBLOCK); 
 
-        listen(s, 5); // 5 is max queue connection
+        listen(s, 1000); // 5 is max queue connection
 
         io.set<StaticWebServer, &StaticWebServer::io_accept>(this);
         io.start(s, ev::READ);  
