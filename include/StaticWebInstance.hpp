@@ -6,6 +6,7 @@
 #include <string>
 #include <HTTPRequestHeader.hpp>
 #include <HTTPResponseHeader.hpp>
+#include <SocketWriteRequest.hpp>
 #include <memory>
 
 class StaticWebInstance {
@@ -15,9 +16,11 @@ private:
         ev::io           io; // io libev
         int              sfd; // socket
   
-        // Buffers that are pending write
+        std::string                 root;
         std::string                 raw_request_header;
-        std::list<Buffer*>          write_queue;
+
+        // Buffers that are pending write
+        std::list<SocketWriteRequest*>          write_queue;
   
         // Generic callback
         void callback(ev::io &watcher, int revents);
@@ -34,7 +37,7 @@ private:
         void reply_request(const HTTPRequestHeader& request_header);
 
 public:
-        StaticWebInstance(int s);
+        StaticWebInstance(std::string root, int s);
 };
 
 #endif

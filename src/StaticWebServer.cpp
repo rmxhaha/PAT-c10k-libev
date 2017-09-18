@@ -16,7 +16,7 @@ void StaticWebServer::io_accept(ev::io &watcher, int revents) {
                 return;
         }
 
-        StaticWebInstance *client = new StaticWebInstance(client_sd);
+        StaticWebInstance *client = new StaticWebInstance(root, client_sd);
 }
 
 void StaticWebServer::signal_cb(ev::sig &signal, int revents) {

@@ -1,4 +1,5 @@
 #include <StaticWebInstance.hpp>
+#include <SocketBufferWriteRequest.hpp>
 #include <iostream>
 #include <fstream>
 
@@ -30,18 +31,12 @@ void StaticWebInstance::write_cb(ev::io &watcher) {
                 return;
         }
 
-        Buffer* buffer = write_queue.front();
-                  
-        ssize_t written = write(watcher.fd, buffer->dpos(), buffer->nbytes());
-        if (written < 0) {
-                perror("read error");
-                return;
-        }
+        SocketWriteRequest* write_request = write_queue.front();
+        if( write_request->write_to(watcher.fd) == -1 ) return; // error write
 
-        buffer->pos += written;
-        if (buffer->nbytes() == 0) {
+        if ( write_request->nbytes() == 0) {
                 write_queue.pop_front();
-                delete buffer;
+                delete write_request;
         }
 
         if( write_queue.empty() ){
@@ -50,6 +45,7 @@ void StaticWebInstance::write_cb(ev::io &watcher) {
                 close(sfd);
 
                 // should delete but exception if delete, just let memory leaks loooool
+                // delete this;
         }
 }
 
@@ -98,14 +94,13 @@ void StaticWebInstance::reply_request(const HTTPRequestHeader& request_header){
                 strcpy(str, raw_response_header.c_str());
                 Buffer *buffer = new Buffer(str, raw_response_header.length());
 
-
-                write_queue.push_back( buffer );
+                write_queue.push_back( new SocketBufferWriteRequest(buffer) );
 
                 char* str2 = new char[100]; 
                 strcpy(str2,"Hello World!\n");
 
                 Buffer* buffer2 = new Buffer(str2, strlen(str2));
-                write_queue.push_back( buffer2 );
+                write_queue.push_back( new SocketBufferWriteRequest(buffer2) );
         }
 }
 
@@ -120,7 +115,7 @@ StaticWebInstance::~StaticWebInstance() {
         printf("%d client(s) connected.\n", --total_clients);
 }
 
-StaticWebInstance::StaticWebInstance(int s) : sfd(s) {
+StaticWebInstance::StaticWebInstance(std::string _root, int s) : sfd(s), root(_root) {
         fcntl(s, F_SETFL, fcntl(s, F_GETFL, 0) | O_NONBLOCK); 
 
         printf("Got connection\n");
