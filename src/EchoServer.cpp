@@ -20,7 +20,7 @@ void EchoServer::io_accept(ev::io &watcher, int revents) {
 }
 
 void EchoServer::signal_cb(ev::sig &signal, int revents) {
-        signal.loop.break_loop();
+        signal.loop.break_loop(); // buat ctrl+c exit program 
 }
 
 EchoServer::EchoServer(int port) {
@@ -40,7 +40,7 @@ EchoServer::EchoServer(int port) {
 
         fcntl(s, F_SETFL, fcntl(s, F_GETFL, 0) | O_NONBLOCK); 
 
-        listen(s, 5);
+        listen(s, 5); // 5 is max queue connection
 
         io.set<EchoServer, &EchoServer::io_accept>(this);
         io.start(s, ev::READ);

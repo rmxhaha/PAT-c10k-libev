@@ -3,16 +3,21 @@
 
 #include <Buffer.hpp>
 #include <ev++.h>
-
+#include <string>
+#include <HTTPRequestHeader.hpp>
+#include <HTTPResponseHeader.hpp>
+#include <memory>
 
 class EchoInstance {
 private:
-        ev::io           io;
         static int total_clients;
-        int              sfd;
+
+        ev::io           io; // io libev
+        int              sfd; // socket
   
         // Buffers that are pending write
-        std::list<Buffer*>     write_queue;
+        std::string                 raw_request_header;
+        std::list<Buffer*>          write_queue;
   
         // Generic callback
         void callback(ev::io &watcher, int revents);
@@ -25,7 +30,9 @@ private:
   
         // effictivly a close and a destroy
         virtual ~EchoInstance();
-  
+
+        void reply_request(const HTTPRequestHeader& request_header);
+
 public:
         EchoInstance(int s);
 };
