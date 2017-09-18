@@ -23,7 +23,7 @@ void StaticWebServer::signal_cb(ev::sig &signal, int revents) {
         signal.loop.break_loop(); // buat ctrl+c exit program 
 }
 
-StaticWebServer::StaticWebServer(int port) {
+StaticWebServer::StaticWebServer(std::string rootpath, int port) :root(rootpath) {
         printf("Listening on port %d\n", port);
 
         struct sockaddr_in addr;

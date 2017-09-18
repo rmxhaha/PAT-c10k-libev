@@ -38,15 +38,13 @@ int main(int argc, char **argv)
         if (argc > 1)
                 port = atoi(argv[1]);
         
-        std::string pathToFile = "html";
+        std::string rootpath = "html";
 
         if (argc > 2)
-                pathToFile = argv[2];
+                rootpath = argv[2];
 
-
-                  
         ev::default_loop       loop;
-        StaticWebServer        echo(port);
+        StaticWebServer        web_server(rootpath, port);
   
         loop.run(0);
   
