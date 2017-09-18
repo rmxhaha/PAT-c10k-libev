@@ -10,7 +10,7 @@ LIBS=-lm -lev
 _DEPS = StaticWebServer.hpp
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = Buffer.o StaticWebInstance.o StaticWebServer.o main.o HTTPRequestHeader.o HTTPResponseHeader.o SocketBufferWriteRequest.o SocketWriteRequest.o
+_OBJ = Buffer.o StaticWebInstance.o StaticWebServer.o main.o HTTPRequestHeader.o HTTPResponseHeader.o SocketBufferWriteRequest.o SocketWriteRequest.o SocketFileWriteRequest.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 
