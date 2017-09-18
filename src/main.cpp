@@ -1,7 +1,7 @@
 #include <string>
-#include <EchoServer.hpp>
-#include <HTTPResponseHeader.hpp>
-#include <HTTPRequestHeader.hpp>
+#include <StaticWebServer.hpp>
+// #include <HTTPResponseHeader.hpp>
+// #include <HTTPRequestHeader.hpp>
 //
 //   A single instance of a non-blocking Echo handler
 //
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 
                   
         ev::default_loop       loop;
-        EchoServer        echo(port);
+        StaticWebServer        echo(port);
   
         loop.run(0);
   

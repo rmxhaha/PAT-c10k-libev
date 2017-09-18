@@ -1,6 +1,6 @@
-#include <EchoServer.hpp>
+#include <StaticWebServer.hpp>
 
-void EchoServer::io_accept(ev::io &watcher, int revents) {
+void StaticWebServer::io_accept(ev::io &watcher, int revents) {
         if (EV_ERROR & revents) {
                 perror("got invalid event");
                 return;
@@ -16,14 +16,14 @@ void EchoServer::io_accept(ev::io &watcher, int revents) {
                 return;
         }
 
-        EchoInstance *client = new EchoInstance(client_sd);
+        StaticWebInstance *client = new StaticWebInstance(client_sd);
 }
 
-void EchoServer::signal_cb(ev::sig &signal, int revents) {
+void StaticWebServer::signal_cb(ev::sig &signal, int revents) {
         signal.loop.break_loop(); // buat ctrl+c exit program 
 }
 
-EchoServer::EchoServer(int port) {
+StaticWebServer::StaticWebServer(int port) {
         printf("Listening on port %d\n", port);
 
         struct sockaddr_in addr;
@@ -42,14 +42,14 @@ EchoServer::EchoServer(int port) {
 
         listen(s, 5); // 5 is max queue connection
 
-        io.set<EchoServer, &EchoServer::io_accept>(this);
-        io.start(s, ev::READ);
+        io.set<StaticWebServer, &StaticWebServer::io_accept>(this);
+        io.start(s, ev::READ);  
 
-        sio.set<&EchoServer::signal_cb>();
+        sio.set<&StaticWebServer::signal_cb>();
         sio.start(SIGINT);
 }
   
-EchoServer::~EchoServer() {
+StaticWebServer::~StaticWebServer() {
         shutdown(s, SHUT_RDWR);
         close(s);
 }

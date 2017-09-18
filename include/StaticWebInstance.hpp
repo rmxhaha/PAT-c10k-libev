@@ -8,7 +8,7 @@
 #include <HTTPResponseHeader.hpp>
 #include <memory>
 
-class EchoInstance {
+class StaticWebInstance {
 private:
         static int total_clients;
 
@@ -29,12 +29,12 @@ private:
         void read_cb(ev::io &watcher);
   
         // effictivly a close and a destroy
-        virtual ~EchoInstance();
+        virtual ~StaticWebInstance();
 
         void reply_request(const HTTPRequestHeader& request_header);
 
 public:
-        EchoInstance(int s);
+        StaticWebInstance(int s);
 };
 
 #endif

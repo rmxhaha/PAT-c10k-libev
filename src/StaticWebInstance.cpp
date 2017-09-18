@@ -1,9 +1,9 @@
-#include <EchoInstance.hpp>
+#include <StaticWebInstance.hpp>
 #include <iostream>
 #include <fstream>
 
 // Generic callback
-void EchoInstance::callback(ev::io &watcher, int revents) {
+void StaticWebInstance::callback(ev::io &watcher, int revents) {
         std::cout << revents << std::endl;
         if (EV_ERROR & revents) {
                 perror("got invalid event");
@@ -24,7 +24,7 @@ void EchoInstance::callback(ev::io &watcher, int revents) {
 }
 
 // Socket is writable
-void EchoInstance::write_cb(ev::io &watcher) {
+void StaticWebInstance::write_cb(ev::io &watcher) {
         if (write_queue.empty()) {
                 io.set(ev::READ);
                 return;
@@ -54,7 +54,7 @@ void EchoInstance::write_cb(ev::io &watcher) {
 }
 
 // Receive message from client socket
-void EchoInstance::read_cb(ev::io &watcher) {
+void StaticWebInstance::read_cb(ev::io &watcher) {
         char       buffer[1025];// suppose to be 1024 but add 1 for null terminate to append to accumulation
 
         ssize_t   nread = recv(watcher.fd, buffer, sizeof(buffer)-1, 0);
@@ -83,7 +83,7 @@ void EchoInstance::read_cb(ev::io &watcher) {
         }
 }
 
-void EchoInstance::reply_request(const HTTPRequestHeader& request_header){
+void StaticWebInstance::reply_request(const HTTPRequestHeader& request_header){
         if( request_header.valid ){
                 HTTPResponseHeader response_header;
                 response_header.version = "HTTP/1.0";
@@ -111,7 +111,7 @@ void EchoInstance::reply_request(const HTTPRequestHeader& request_header){
 
 
 // effictivly a close and a destroy
-EchoInstance::~EchoInstance() {
+StaticWebInstance::~StaticWebInstance() {
         // Stop and free watcher if client socket is closing
         io.stop();
 
@@ -120,16 +120,16 @@ EchoInstance::~EchoInstance() {
         printf("%d client(s) connected.\n", --total_clients);
 }
 
-EchoInstance::EchoInstance(int s) : sfd(s) {
+StaticWebInstance::StaticWebInstance(int s) : sfd(s) {
         fcntl(s, F_SETFL, fcntl(s, F_GETFL, 0) | O_NONBLOCK); 
 
         printf("Got connection\n");
         total_clients++;
 
-        io.set<EchoInstance, &EchoInstance::callback>(this);
+        io.set<StaticWebInstance, &StaticWebInstance::callback>(this);
 
         io.start(s, ev::READ);
 }
 
-int EchoInstance::total_clients = 0;
+int StaticWebInstance::total_clients = 0;
 

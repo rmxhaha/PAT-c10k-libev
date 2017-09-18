@@ -1,10 +1,10 @@
 #ifndef ECHO_SERVER
 #define ECHO_SERVER
 
-#include <EchoInstance.hpp>
+#include <StaticWebInstance.hpp>
 #include <ev++.h>
 
-class EchoServer {
+class StaticWebServer {
 private:
         ev::io           io;
         ev::sig         sio;
@@ -16,9 +16,9 @@ public:
   
         static void signal_cb(ev::sig &signal, int revents);
   
-        EchoServer(int port);
+        StaticWebServer(int port);
           
-        virtual ~EchoServer();
+        virtual ~StaticWebServer();
 };
 
 #endif

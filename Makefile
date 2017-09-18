@@ -7,10 +7,10 @@ LDIR =lib
 
 LIBS=-lm -lev
 
-_DEPS = EchoServer.hpp
+_DEPS = StaticWebServer.hpp
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = Buffer.o EchoInstance.o EchoServer.o main.o HTTPRequestHeader.o HTTPResponseHeader.o
+_OBJ = Buffer.o StaticWebInstance.o StaticWebServer.o main.o HTTPRequestHeader.o HTTPResponseHeader.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 
@@ -23,4 +23,4 @@ main: $(OBJ)
 .PHONY: clean
 
 clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ 
+	rm -f $(ODIR)/*.o *~ main 
