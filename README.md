@@ -1,4 +1,9 @@
 # PAT-c10k-libev
+Oleh
+
+- 13514087 - Praditya Raudi A
+- 13514090 - Candra Ramsi
+
 ## Deskripsi Tugas
 Tugas Pengantar Aplikasi Terdistribusi (PAT) membuat applikasi server yang diharapkan dapat melayani 10000 concurrent connection dengan libev. Melakukan benchmark menggunakan apache benchmark tools dan membandingkan hasilnya dengan nginx/apache web server. 
 
